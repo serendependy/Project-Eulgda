@@ -2,15 +2,11 @@ module Prob03 where
 
 open import Data.Nat
 open import Data.Fin using (toℕ)
-open import Data.Vec hiding (_>>=_)
+open import Data.Vec hiding (_>>=_ ; applicative)
 open import Coinduction
 open import Data.Stream as Stream
 open import Function
 open import Data.Maybe as Maybe
-
-open import Level renaming (suc to lsuc ; zero to lzero)
-open import Category.Monad
-open RawMonad (Maybe.monad {Level.zero})
 
 nats : Stream ℕ
 nats = iterate suc zero
@@ -42,3 +38,9 @@ primes = aux solution-space
   aux (x ∷ xs) with x
   ... | just n  = x ∷ ♯ (aux (sieve-step n (♭ xs)))
   ... | nothing = x ∷ ♯ (aux (♭ xs))
+
+module Proofs where
+-- for fun - Stream is Applicative
+  open import Category.Applicative
+  applicative : RawApplicative (λ (A : Set) → Stream A)
+  applicative = record { pure = repeat ; _⊛_ = _⊛∞_ }
